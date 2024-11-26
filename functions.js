@@ -164,31 +164,31 @@ var LKS92WGS84 = (function()
     return LKS92WGS84;
 })();
 
-        // Izveido karti
-        const map = L.map('map').setView([56.8796, 24.6032], 7); // Centrs uz Latviju
+// Izveido karti
+const map = L.map('map').setView([56.8796, 24.6032], 7); // Latvijas teritorijas centra koordinātes
 
-        // Pievieno karšu slāni
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+// Pievieno karti 
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+}).addTo(map);
 
-        // Datu ielāde
-        fetch('geomap.json')
-            .then(response => response.json())
-            .then(data => {
-                data.features.forEach(feature => {
-                    const coords = feature.geometry.coordinates;
-                    const latLng = LKS92WGS84.convertXYToLatLon(coords);
+// Datu ielāde no json faila
+fetch('geomap.json')
+    .then(response => response.json())
+    .then(data => {
+        data.features.forEach(feature => {
+            const coords = feature.geometry.coordinates;
+            const latLng = LKS92WGS84.convertXYToLatLon(coords); // Pārveido kordinātes kas ir json failā uz parieizo formātu
 
-                    // Izveido marķieri
-                    const marker = L.marker([latLng[0], latLng[1]]).addTo(map);
-                    
-                    // Pievieno uznirstošo informāciju
-                    marker.bindPopup(`
-                        <strong>${feature.properties.PLACENAME}</strong>
-                        <p>Region code: ${feature.properties.REG_CODE}</p>
-                    `);
-                });
-            })
-            .catch(error => console.error('Kļūda ielādējot datus:', error));
+            // Izveido marķieri
+            const marker = L.marker([latLng[0], latLng[1]]).addTo(map);
+            
+            // Pievieno kartiņu kad uzspiež
+            marker.bindPopup(`
+                <strong>${feature.properties.PLACENAME}</strong>
+                <p>Region code: ${feature.properties.REG_CODE}</p>
+            `);
+        });
+    })
+    .catch(error => console.error('Kļūda ielādējot datus:', error)); // Ja ir kļūda tad izvada to
